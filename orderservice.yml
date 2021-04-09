@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderservice
+  labels:
+    app: myorder
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myorder
+  template:
+    metadata:
+      labels:
+        app: myorder
+    spec:
+      containers:
+        - name: myorder
+          image: ku11/orderservice:latest
+          ports:
+            - containerPort: 27017
+          imagePullPolicy: Always
+         
+              ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderservice
+spec:
+  selector:
+    app: orderservice
+  type: 
+  ports:
+  - protocol: TCP
+    port: 6443
+    targetPort: 27017
+    nodePort: 30003
+

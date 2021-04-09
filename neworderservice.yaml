@@ -1,0 +1,19 @@
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: orderservice-deployment
+spec: 
+  replicas: 2
+  template: 
+    metadata: 
+      labels: 
+        app: nodejs
+    spec: 
+      containers: 
+        - 
+          image: "ku11/neworderservice:latest"
+          name: orderservice
+          ports: 
+            - 
+              containerPort:5000

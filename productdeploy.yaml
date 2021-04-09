@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+  labels:
+    app: product
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+      - name: product
+        image: naf007/product-image:latest
+        env:
+        - name: DB_USER
+          value: "postgres"
+        - name: HOSTNAME
+          value: "vsr-kub001.informatik.tu-chemnitz.de"
+        - name: DATABASE_NAME
+          value: "organicstore"
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: secret-basic-auth
+              key: username
+        - name: DB_PORT
+          value: "32265" 
+        ports:
+        - containerPort: 3005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 3006
+      targetPort: 3005
+      nodePort: 30008

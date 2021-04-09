@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  labels:
+    app: cart
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+      - name: cart
+        image: naf007/cartservice:latest
+        env:
+        - name: DB_USER
+          value: "postgres"
+        - name: HOSTNAME
+          value: "vsr-kub001.informatik.tu-chemnitz.de"
+        - name: DATABASE_NAME
+          value: "cartdatabase"
+        - name: DB_PASS
+          value: "admin"
+        - name: DB_PORT
+          value: "32265" 
+        ports:
+        - containerPort: 3020
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+spec:
+  selector:
+    app: cart
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 3049
+      targetPort: 3020
+      nodePort: 30020

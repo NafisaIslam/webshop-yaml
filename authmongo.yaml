@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: login-service-pod
+  labels:
+    app: auth
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth   
+    spec:
+      containers:
+      - name: login-service
+        image: exemplarischeteam/nodejs:latest
+        ports:
+        - containerPort: 3002
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-username 
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:  
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-password 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: login-service
+spec:
+  selector:
+    app: login-service
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 3003
+    targetPort: 3002
+    nodePort: 30004
